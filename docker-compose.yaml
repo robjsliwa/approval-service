@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  approval-service:
+    build: .
+    container_name: approval-service
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+      - SECRET_KEY=your_secret_key
+      - WEBHOOK_TOKEN=your_webhook_token
+    depends_on:
+      - mongo
+
+  webhook-listener:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook_listener
+    container_name: webhook-listener
+    ports:
+      - "8001:8001"
+    environment:
+      - WEBHOOK_URL=http://webhook-listener:8001/webhook
+      - REGISTRATION_URL=http://approval-service:8000/register-webhook
+      - WEBHOOK_TOKEN=your_webhook_token
+    depends_on:
+      - approval-service
+
+volumes:
+  mongo-data:
+    driver: local

@@ -7,11 +7,15 @@
     <title>Approval Page</title>
 </head>
 <body class="bg-gray-100 p-6">
-    <div class="container mx-auto bg-white p-8 rounded shadow-md">
-        <h1 class="text-2xl font-bold mb-4">Approval Request</h1>
+    <div class="container mx-auto bg-white p-8 rounded shadow-md" id="approval-container">
+        <h1 class="text-2xl font-bold mb-4" id="title">Approval Request</h1>
         <p id="description" class="mb-4"></p>
         <div id="bullet-points" class="mb-4"></div>
         <button id="submit-button" class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50" disabled>Submit</button>
+    </div>
+    <div class="container mx-auto bg-white p-8 rounded shadow-md hidden" id="thankyou-container">
+        <h1 class="text-2xl font-bold mb-4">Thank You! 🎉🙏😊</h1>
+        <p>Your approval has been submitted successfully.</p>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
@@ -51,7 +55,8 @@
                         method: 'POST'
                     });
                     if (acceptResponse.ok) {
-                        alert('Approval submitted successfully!');
+                        document.getElementById('approval-container').classList.add('hidden');
+                        document.getElementById('thankyou-container').classList.remove('hidden');
                     } else {
                         alert('Failed to submit approval.');
                     }
