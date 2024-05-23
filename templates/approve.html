@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Approval Page</title>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="container mx-auto bg-white p-8 rounded shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Approval Request</h1>
+        <p id="description" class="mb-4"></p>
+        <div id="bullet-points" class="mb-4"></div>
+        <button id="submit-button" class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50" disabled>Submit</button>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = "{{ token }}";
+            const response = await fetch(`/verify/${token}`);
+            const data = await response.json();
+
+            if (data.status === "valid") {
+                const approvalData = data.data;
+                document.getElementById('description').innerText = approvalData.description;
+
+                const bulletPoints = approvalData.bullet_points;
+                const bulletPointsContainer = document.getElementById('bullet-points');
+                bulletPoints.forEach((point, index) => {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `bullet-point-${index}`;
+                    checkbox.checked = point.checked;
+                    checkbox.classList.add('mr-2');
+
+                    const label = document.createElement('label');
+                    label.setAttribute('for', `bullet-point-${index}`);
+                    label.innerText = point.description;
+                    label.classList.add('mb-2', 'block');
+
+                    bulletPointsContainer.appendChild(checkbox);
+                    bulletPointsContainer.appendChild(label);
+
+                    checkbox.addEventListener('change', () => {
+                        const allChecked = Array.from(document.querySelectorAll('#bullet-points input')).every(checkbox => checkbox.checked);
+                        document.getElementById('submit-button').disabled = !allChecked;
+                    });
+                });
+
+                document.getElementById('submit-button').addEventListener('click', async () => {
+                    const acceptResponse = await fetch(`/accept/${token}`, {
+                        method: 'POST'
+                    });
+                    if (acceptResponse.ok) {
+                        alert('Approval submitted successfully!');
+                    } else {
+                        alert('Failed to submit approval.');
+                    }
+                });
+            } else {
+                document.getElementById('description').innerText = "Invalid or expired token.";
+            }
+        });
+    </script>
+</body>
+</html>
