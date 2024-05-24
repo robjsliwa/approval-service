@@ -11,6 +11,9 @@ This project implements an approval service where users can create items on beha
 
 ## Project Structure
 
+The project structure is as follows:
+
+```bash
 .
 ├── Dockerfile
 ├── Dockerfile.webhook_listener
@@ -21,7 +24,7 @@ This project implements an approval service where users can create items on beha
 ├── webhook_listener.py
 └── templates/
 │ └── approve.html
-
+```
 
 ## Setup
 
